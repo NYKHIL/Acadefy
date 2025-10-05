@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Acadefy - Your Personal AI Tutor{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    Your Personal AI Tutor
+                    <span class="gradient-text">Awaits</span>
+                </h1>
+                <p class="hero-description">
+                    Experience adaptive, context-aware learning with Acadefy. Our AI tutor understands your learning style, 
+                    tracks your progress, and provides personalized guidance to help you achieve your educational goals.
+                </p>
+                <div class="hero-buttons">
+                    <a href="/tutor" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        Start Learning Now
+                    </a>
+                    <a href="/dashboard" class="btn btn-secondary">
+                        <i class="fas fa-chart-line"></i>
+                        View Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card">
+                    <div class="card-header">
+                        <i class="fas fa-robot"></i>
+                        <span>AI Tutor</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="message ai-message">
+                            <p>Hi! I'm here to help you learn. What subject would you like to explore today?</p>
+                        </div>
+                        <div class="message user-message">
+                            <p>Can you help me with calculus?</p>
+                        </div>
+                        <div class="message ai-message">
+                            <p>Absolutely! Let's start with derivatives. What's your current understanding level?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="features-container">
+        <div class="section-header">
+            <h2>Why Choose Acadefy?</h2>
+            <p>Discover the power of personalized AI tutoring</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Context-Aware AI</h3>
+                <p>Our AI remembers your learning journey, adapting responses based on your progress and preferences.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Progress Tracking</h3>
+                <p>Visual dashboards show your learning progress with detailed analytics and milestone celebrations.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3>Smart Recommendations</h3>
+                <p>Get personalized study suggestions based on your strengths, weaknesses, and learning patterns.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>24/7 Availability</h3>
+                <p>Learn at your own pace, anytime, anywhere. Your AI tutor is always ready to help.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Multi-Subject Support</h3>
+                <p>From mathematics to science, programming to literature - comprehensive subject coverage.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Adaptive Learning</h3>
+                <p>The AI adjusts difficulty and teaching style based on your individual learning needs.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">10K+</div>
+                <div class="stat-label">Students Helped</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Subjects Covered</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">95%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">AI Availability</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="cta-container">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Learning?</h2>
+            <p>Join thousands of students who are already experiencing the future of personalized education.</p>
+            <div class="cta-buttons">
+                <a href="/tutor" class="btn btn-primary btn-large">
+                    <i class="fas fa-play"></i>
+                    Start Your Journey
+                </a>
+                <a href="/dashboard" class="btn btn-outline btn-large">
+                    <i class="fas fa-eye"></i>
+                    Explore Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add some interactive animations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate feature cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+        
+        // Animate floating card
+        const floatingCard = document.querySelector('.floating-card');
+        if (floatingCard) {
+            setInterval(() => {
+                floatingCard.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    floatingCard.style.transform = 'translateY(0px)';
+                }, 2000);
+            }, 4000);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Acadefy{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="profile-info">
+                <h1>Learning Profile</h1>
+                <p>Manage your preferences and view your learning statistics</p>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <!-- Settings Section -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2>Learning Preferences</h2>
+                    <p>Customize your AI tutor experience</p>
+                </div>
+                
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="difficulty-preference">Preferred Difficulty Level</label>
+                        <select id="difficulty-preference" class="form-select">
+                            <option value="beginner">Beginner (1-3)</option>
+                            <option value="intermediate" selected>Intermediate (4-7)</option>
+                            <option value="advanced">Advanced (8-10)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="learning-style">Learning Style</label>
+                        <select id="learning-style" class="form-select">
+                            <option value="visual">Visual Learner</option>
+                            <option value="auditory">Auditory Learner</option>
+                            <option value="kinesthetic">Kinesthetic Learner</option>
+                            <option value="mixed" selected>Mixed Learning</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="session-length">Preferred Session Length</label>
+                        <select id="session-length" class="form-select">
+                            <option value="short">Short (15-30 min)</option>
+                            <option value="medium" selected>Medium (30-60 min)</option>
+                            <option value="long">Long (60+ min)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="detailed-explanations" checked>
+                            <span class="checkmark"></span>
+                            Provide detailed explanations
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="practice-problems" checked>
+                            <span class="checkmark"></span>
+                            Include practice problems
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="progress-notifications">
+                            <span class="checkmark"></span>
+                            Send progress notifications
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="savePreferences()">
+                        <i class="fas fa-save"></i>
+                        Save Preferences
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetPreferences()">
+                        <i class="fas fa-undo"></i>
+                        Reset to Default
+                    </button>
+                </div>
+            </div>
+
+            <!-- Learning Goals Section -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2>Learning Goals</h2>
+                    <p>Set and track your educational objectives</p>
+                </div>
+                
+                <div class="goals-container">
+                    <div class="add-goal">
+                        <div class="input-group">
+                            <input type="text" id="new-goal" class="form-input" placeholder="Enter a new learning goal...">
+                            <button class="btn btn-primary" onclick="addGoal()">
+                                <i class="fas fa-plus"></i>
+                                Add Goal
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="goals-list" class="goals-list">
+                        <!-- Goals will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2>Learning Statistics</h2>
+                    <p>Your learning journey in numbers</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="days-active">0</h3>
+                            <p>Days Active</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-messages">0</h3>
+                            <p>Messages Sent</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="subjects-explored">0</h3>
+                            <p>Subjects Explored</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="achievements">0</h3>
+                            <p>Achievements</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management Section -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2>Data Management</h2>
+                    <p>Manage your learning data and privacy</p>
+                </div>
+                
+                <div class="data-actions">
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        Export Learning Data
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearHistory()">
+                        <i class="fas fa-history"></i>
+                        Clear Chat History
+                    </button>
+                    <button class="btn btn-danger" onclick="resetProgress()">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Reset All Progress
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmation-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">Confirm Action</h3>
+            <button class="modal-close" onclick="closeConfirmationModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="modal-message">Are you sure you want to perform this action?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+            <button id="confirm-button" class="btn btn-danger" onclick="confirmAction()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div id="success-toast" class="toast success-toast" style="display: none;">
+    <div class="toast-content">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Action completed successfully!</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

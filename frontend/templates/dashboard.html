@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Acadefy{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <h1>Learning Dashboard</h1>
+                <p>Track your progress and discover new learning opportunities</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="refreshDashboard()">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading your learning data...</p>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="dashboard-content" style="display: none;">
+            <!-- Overview Cards -->
+            <div class="overview-cards">
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="total-subjects">0</h3>
+                        <p>Subjects Studied</p>
+                    </div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="avg-skill-level">0</h3>
+                        <p>Average Skill Level</p>
+                    </div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="total-interactions">0</h3>
+                        <p>Total Interactions</p>
+                    </div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="overall-completion">0%</h3>
+                        <p>Overall Progress</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Progress Section -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Subject Progress</h2>
+                        <p>Your learning journey across different subjects</p>
+                    </div>
+                    <div id="progress-list" class="progress-list">
+                        <!-- Progress items will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Recommendations Section -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Recommended for You</h2>
+                        <p>Personalized suggestions based on your progress</p>
+                    </div>
+                    <div id="recommendations-list" class="recommendations-list">
+                        <!-- Recommendations will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="analytics-section">
+                <div class="section-header">
+                    <h2>Learning Analytics</h2>
+                    <p>Insights into your learning patterns and achievements</p>
+                </div>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Learning Streak</h3>
+                        <div class="streak-display">
+                            <span id="learning-streak" class="streak-number">0</span>
+                            <span class="streak-label">days</span>
+                        </div>
+                        <p>Keep up the great work!</p>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>Response Time</h3>
+                        <div class="response-time-display">
+                            <span id="avg-response-time" class="time-number">0.0</span>
+                            <span class="time-label">seconds</span>
+                        </div>
+                        <p>Average AI response time</p>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>Most Active Subject</h3>
+                        <div class="subject-display">
+                            <i id="active-subject-icon" class="fas fa-book"></i>
+                            <span id="active-subject" class="subject-name">Loading...</span>
+                        </div>
+                        <p>Your focus area this week</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-content">
+                <i class="fas fa-graduation-cap"></i>
+                <h2>Start Your Learning Journey</h2>
+                <p>You haven't started any learning sessions yet. Begin chatting with your AI tutor to see your progress here!</p>
+                <a href="/tutor" class="btn btn-primary">
+                    <i class="fas fa-robot"></i>
+                    Start Learning
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

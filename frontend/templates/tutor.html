@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}AI Tutor - Acadefy{% endblock %}
+
+{% block content %}
+<div class="tutor-page">
+    <div class="tutor-container">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="tutor-info">
+                <div class="tutor-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="tutor-details">
+                    <h2>Acadefy AI Tutor</h2>
+                    <p class="tutor-status">
+                        <span class="status-indicator online"></span>
+                        Ready to help you learn
+                    </p>
+                </div>
+            </div>
+            <div class="chat-actions">
+                <button class="btn btn-secondary" onclick="clearChat()" title="Clear Chat">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="btn btn-secondary" onclick="exportChat()" title="Export Chat">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-container">
+            <div id="chat-messages" class="chat-messages">
+                <!-- Welcome Message -->
+                <div class="message ai-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-bubble">
+                            <p>Hello! I'm your AI tutor, ready to help you learn and grow. What subject would you like to explore today?</p>
+                        </div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typing-indicator" class="typing-indicator" style="display: none;">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="typing-content">
+                    <div class="typing-bubble">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <div class="input-group">
+                    <textarea 
+                        id="message-input" 
+                        class="message-input" 
+                        placeholder="Ask me anything about your studies..."
+                        rows="1"
+                        maxlength="1000"
+                    ></textarea>
+                    <button id="send-button" class="send-button" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="input-footer">
+                    <div class="character-count">
+                        <span id="char-count">0</span>/1000
+                    </div>
+                    <div class="quick-actions">
+                        <button class="quick-action" onclick="insertQuickMessage('Can you help me with math?')">
+                            <i class="fas fa-calculator"></i>
+                            Math
+                        </button>
+                        <button class="quick-action" onclick="insertQuickMessage('I need help with science')">
+                            <i class="fas fa-flask"></i>
+                            Science
+                        </button>
+                        <button class="quick-action" onclick="insertQuickMessage('Can you explain this concept?')">
+                            <i class="fas fa-question-circle"></i>
+                            Explain
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+        <div class="sidebar-section">
+            <h3>Session Info</h3>
+            <div class="session-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Messages:</span>
+                    <span id="message-count" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Session:</span>
+                    <span id="session-id" class="stat-value">New</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Started:</span>
+                    <span id="session-start" class="stat-value">Now</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>Quick Tips</h3>
+            <div class="tips-list">
+                <div class="tip-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <p>Be specific about what you need help with</p>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-comments"></i>
+                    <p>Ask follow-up questions to deepen understanding</p>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-practice"></i>
+                    <p>Request practice problems to test your knowledge</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>Subjects</h3>
+            <div class="subjects-list">
+                <button class="subject-btn" onclick="insertQuickMessage('I want to learn mathematics')">
+                    <i class="fas fa-calculator"></i>
+                    Mathematics
+                </button>
+                <button class="subject-btn" onclick="insertQuickMessage('Help me with science')">
+                    <i class="fas fa-flask"></i>
+                    Science
+                </button>
+                <button class="subject-btn" onclick="insertQuickMessage('I need English help')">
+                    <i class="fas fa-book"></i>
+                    English
+                </button>
+                <button class="subject-btn" onclick="insertQuickMessage('Teach me programming')">
+                    <i class="fas fa-code"></i>
+                    Programming
+                </button>
+                <button class="subject-btn" onclick="insertQuickMessage('I want to study history')">
+                    <i class="fas fa-landmark"></i>
+                    History
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div id="error-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Connection Error</h3>
+            <button class="modal-close" onclick="closeErrorModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="error-message">Something went wrong. Please try again.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="closeErrorModal()">OK</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/tutor.js') }}"></script>
+{% endblock %}
