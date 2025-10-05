@@ -25,6 +25,7 @@ class AcadefyTutor {
     setupEventListeners() {
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
+        const fileInput = document.getElementById('chat-file-input');
         
         if (messageInput) {
             // Auto-resize textarea
@@ -48,6 +49,10 @@ class AcadefyTutor {
         
         if (sendButton) {
             sendButton.addEventListener('click', () => this.sendMessage());
+        }
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => this.handleChatFileUpload(e));
         }
         
         // Setup quick action buttons
@@ -185,17 +190,27 @@ class AcadefyTutor {
         
         const timestamp = window.AcadefyApp.formatTimeAgo(new Date());
         
-        messageElement.innerHTML = `
-            <div class="message-avatar">
-                <i class="fas fa-${type === 'user' ? 'user' : 'robot'}"></i>
-            </div>
-            <div class="message-content">
-                <div class="message-bubble ${isError ? 'error-message' : ''}">
-                    <p>${this.formatMessageContent(content)}</p>
+        // Handle system messages differently
+        if (type === 'system') {
+            messageElement.innerHTML = `
+                <div class="system-message-content">
+                    <i class="fas fa-info-circle"></i>
+                    <span>${content}</span>
                 </div>
-                <div class="message-time">${timestamp}</div>
-            </div>
-        `;
+            `;
+        } else {
+            messageElement.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-${type === 'user' ? 'user' : 'robot'}"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble ${isError ? 'error-message' : ''}">
+                        <p>${this.formatMessageContent(content)}</p>
+                    </div>
+                    <div class="message-time">${timestamp}</div>
+                </div>
+            `;
+        }
         
         chatMessages.appendChild(messageElement);
         
@@ -374,6 +389,103 @@ class AcadefyTutor {
         }
     }
     
+    handleChatFileUpload(event) {
+        const files = Array.from(event.target.files);
+        this.attachedFiles = files;
+        this.displayAttachedFiles();
+        
+        // Auto-upload files and add to knowledge base
+        this.uploadChatFiles(files);
+    }
+    
+    async uploadChatFiles(files) {
+        const attachedContainer = document.getElementById('chat-attached-files');
+        
+        try {
+            for (const file of files) {
+                // Show uploading status
+                this.updateFileStatus(file.name, 'uploading');
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('title', file.name);
+                
+                const response = await fetch('/api/upload-direct', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    this.updateFileStatus(file.name, 'success');
+                    
+                    // Add a system message about the uploaded file
+                    this.addMessage(`📎 Document uploaded: ${file.name}. You can now ask questions about its content!`, 'system');
+                } else {
+                    this.updateFileStatus(file.name, 'error');
+                    window.AcadefyApp.showToast(`Failed to upload ${file.name}`, 'error');
+                }
+            }
+        } catch (error) {
+            console.error('Error uploading files:', error);
+            window.AcadefyApp.showToast('Failed to upload files', 'error');
+        }
+    }
+    
+    displayAttachedFiles() {
+        const container = document.getElementById('chat-attached-files');
+        if (!container || !this.attachedFiles || this.attachedFiles.length === 0) {
+            if (container) container.innerHTML = '';
+            return;
+        }
+        
+        container.innerHTML = `
+            <div class="attached-files">
+                ${this.attachedFiles.map(file => `
+                    <div class="attached-file" data-filename="${file.name}">
+                        <i class="fas fa-${this.getFileIcon(file.name)}"></i>
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-status" id="status-${file.name}">📤</span>
+                        <button class="remove-file" onclick="tutorInstance.removeAttachedFile('${file.name}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+    
+    updateFileStatus(filename, status) {
+        const statusElement = document.getElementById(`status-${filename}`);
+        if (statusElement) {
+            const statusIcons = {
+                'uploading': '⏳',
+                'success': '✅',
+                'error': '❌'
+            };
+            statusElement.textContent = statusIcons[status] || '📤';
+        }
+    }
+    
+    removeAttachedFile(filename) {
+        if (this.attachedFiles) {
+            this.attachedFiles = this.attachedFiles.filter(file => file.name !== filename);
+            this.displayAttachedFiles();
+        }
+    }
+    
+    getFileIcon(filename) {
+        const extension = filename.split('.').pop().toLowerCase();
+        const iconMap = {
+            'pdf': 'file-pdf',
+            'docx': 'file-word',
+            'pptx': 'file-powerpoint',
+            'txt': 'file-alt'
+        };
+        return iconMap[extension] || 'file';
+    }
+
     focusInput() {
         const messageInput = document.getElementById('message-input');
         if (messageInput) {
@@ -410,6 +522,13 @@ window.insertQuickMessage = function(message) {
 window.closeErrorModal = function() {
     if (window.tutorInstance) {
         window.tutorInstance.closeErrorModal();
+    }
+};
+
+window.triggerFileUpload = function() {
+    const fileInput = document.getElementById('chat-file-input');
+    if (fileInput) {
+        fileInput.click();
     }
 };
 

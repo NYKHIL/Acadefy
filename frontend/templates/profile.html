@@ -165,6 +165,75 @@
                 </div>
             </div>
 
+            <!-- Knowledge Base Section -->
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2>Knowledge Base</h2>
+                    <p>Add documents and links for the AI tutor to reference</p>
+                </div>
+                
+                <div class="knowledge-base-container">
+                    <!-- Add Document Form -->
+                    <div class="add-document-section">
+                        <h3>Add Reference Material</h3>
+                        
+                        <!-- URL Input -->
+                        <div class="document-input-group">
+                            <label for="document-url">Add from URL:</label>
+                            <div class="input-group">
+                                <input type="url" id="document-url" class="form-input" placeholder="https://example.com/document.pdf">
+                                <input type="text" id="document-title" class="form-input" placeholder="Document title (optional)">
+                                <button class="btn btn-primary" onclick="addDocumentFromUrl()">
+                                    <i class="fas fa-link"></i>
+                                    Add URL
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- File Upload -->
+                        <div class="document-input-group">
+                            <label for="document-files">Upload Files (PDF, DOCX, PPTX, TXT) - Max 5 files:</label>
+                            <div class="file-input-group">
+                                <div class="file-drop-zone" id="file-drop-zone">
+                                    <input type="file" id="document-files" class="form-file-input" accept=".pdf,.docx,.pptx,.txt" multiple>
+                                    <div class="drop-zone-content">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Click to select files or drag & drop here</p>
+                                        <small>Supports PDF, DOCX, PPTX, TXT (Max 5 files, 10MB each)</small>
+                                    </div>
+                                </div>
+                                <div id="selected-files" class="selected-files-list"></div>
+                                <button class="btn btn-primary" onclick="addDocumentFromFiles()" id="upload-files-btn" disabled>
+                                    <i class="fas fa-upload"></i>
+                                    Upload Selected Files
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Text Input -->
+                        <div class="document-input-group">
+                            <label for="document-text">Add from Text:</label>
+                            <div class="text-input-group">
+                                <input type="text" id="text-title" class="form-input" placeholder="Document title">
+                                <textarea id="document-text" class="form-textarea" rows="4" placeholder="Paste your text content here..."></textarea>
+                                <button class="btn btn-primary" onclick="addDocumentFromText()">
+                                    <i class="fas fa-file-text"></i>
+                                    Add Text
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Documents List -->
+                    <div class="documents-list-section">
+                        <h3>Reference Documents</h3>
+                        <div id="documents-list" class="documents-list">
+                            <!-- Documents will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Data Management Section -->
             <div class="profile-section">
                 <div class="section-header">

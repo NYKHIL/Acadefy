@@ -1,0 +1,14 @@
+This is a test document for Acadefy file upload functionality.
+
+It contains some sample content about artificial intelligence and machine learning.
+
+Machine learning is a subset of artificial intelligence that focuses on algorithms that can learn from data without being explicitly programmed for every task.
+
+Key concepts in machine learning include:
+1. Supervised learning
+2. Unsupervised learning  
+3. Reinforcement learning
+4. Neural networks
+5. Deep learning
+
+This document can be used to test the file upload and text extraction features of the Acadefy platform.

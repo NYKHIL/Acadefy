@@ -18,6 +18,7 @@ class AcadefyProfile {
         this.loadPreferences();
         this.loadGoals();
         this.loadStatistics();
+        this.loadDocuments();
         this.setupEventListeners();
     }
     
@@ -41,6 +42,44 @@ class AcadefyProfile {
                     e.preventDefault();
                     this.addGoal();
                 }
+            });
+        }
+        
+        // File upload listeners
+        this.setupFileUploadListeners();
+    }
+    
+    setupFileUploadListeners() {
+        const fileInput = document.getElementById('document-files');
+        const dropZone = document.getElementById('file-drop-zone');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => this.handleFileSelection(e));
+        }
+        
+        if (dropZone) {
+            // Drag and drop functionality
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                
+                const files = Array.from(e.dataTransfer.files);
+                this.handleDroppedFiles(files);
+            });
+            
+            // Click to select files
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
             });
         }
     }
@@ -366,6 +405,361 @@ class AcadefyProfile {
         this.closeConfirmationModal();
     }
     
+    async loadDocuments() {
+        try {
+            const response = await window.AcadefyApp.apiRequest('/documents');
+            
+            if (response.success && response.data.documents) {
+                this.renderDocuments(response.data.documents);
+            }
+        } catch (error) {
+            console.error('Error loading documents:', error);
+        }
+    }
+    
+    renderDocuments(documents) {
+        const documentsList = document.getElementById('documents-list');
+        if (!documentsList) return;
+        
+        if (documents.length === 0) {
+            documentsList.innerHTML = `
+                <div class="empty-content">
+                    <i class="fas fa-book"></i>
+                    <p>No reference documents added yet. Add some documents above to enhance your AI tutor's knowledge!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        documentsList.innerHTML = documents.map(doc => `
+            <div class="document-item">
+                <div class="document-info">
+                    <h4 class="document-title">${window.AcadefyUtils.sanitizeHtml(doc.title)}</h4>
+                    <p class="document-meta">
+                        <span><i class="fas fa-link"></i> ${doc.url}</span>
+                        <span><i class="fas fa-file"></i> ${doc.chunks_count} chunks</span>
+                        <span><i class="fas fa-tags"></i> ${doc.keywords_count} keywords</span>
+                    </p>
+                </div>
+                <div class="document-actions">
+                    <button class="btn btn-sm btn-danger" onclick="profileInstance.removeDocument('${doc.id}')">
+                        <i class="fas fa-trash"></i>
+                        Remove
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    async addDocumentFromUrl() {
+        const urlInput = document.getElementById('document-url');
+        const titleInput = document.getElementById('document-title');
+        
+        if (!urlInput || !urlInput.value.trim()) {
+            window.AcadefyApp.showToast('Please enter a valid URL', 'error');
+            return;
+        }
+        
+        const url = urlInput.value.trim();
+        const title = titleInput.value.trim();
+        
+        try {
+            window.AcadefyApp.showToast('Adding document...', 'info', 1000);
+            
+            const response = await window.AcadefyApp.apiRequest('/documents/add-url', {
+                method: 'POST',
+                body: JSON.stringify({ url, title })
+            });
+            
+            if (response.success) {
+                window.AcadefyApp.showToast('Document added successfully!', 'success');
+                urlInput.value = '';
+                titleInput.value = '';
+                this.loadDocuments();
+            } else {
+                window.AcadefyApp.showToast(response.data.error || 'Failed to add document', 'error');
+            }
+        } catch (error) {
+            console.error('Error adding document:', error);
+            window.AcadefyApp.showToast('Failed to add document', 'error');
+        }
+    }
+    
+    handleFileSelection(event) {
+        const files = Array.from(event.target.files);
+        this.validateAndDisplayFiles(files);
+    }
+    
+    handleDroppedFiles(files) {
+        // Update the file input with dropped files
+        const fileInput = document.getElementById('document-files');
+        if (fileInput) {
+            const dt = new DataTransfer();
+            files.forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
+        }
+        
+        this.validateAndDisplayFiles(files);
+    }
+    
+    validateAndDisplayFiles(files) {
+        const maxFiles = 5;
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const allowedExtensions = ['.pdf', '.docx', '.pptx', '.txt'];
+        
+        // Check file count
+        if (files.length > maxFiles) {
+            window.AcadefyApp.showToast(`Maximum ${maxFiles} files allowed`, 'error');
+            return;
+        }
+        
+        const validFiles = [];
+        const errors = [];
+        
+        files.forEach(file => {
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            // Check file type
+            if (!allowedExtensions.includes(fileExtension)) {
+                errors.push(`${file.name}: Unsupported file type`);
+                return;
+            }
+            
+            // Check file size
+            if (file.size > maxSize) {
+                errors.push(`${file.name}: File too large (max 10MB)`);
+                return;
+            }
+            
+            validFiles.push(file);
+        });
+        
+        // Show errors if any
+        if (errors.length > 0) {
+            window.AcadefyApp.showToast(errors.join(', '), 'error');
+        }
+        
+        // Display valid files
+        this.displaySelectedFiles(validFiles);
+        
+        // Enable/disable upload button
+        const uploadBtn = document.getElementById('upload-files-btn');
+        if (uploadBtn) {
+            uploadBtn.disabled = validFiles.length === 0;
+        }
+    }
+    
+    displaySelectedFiles(files) {
+        const selectedFilesList = document.getElementById('selected-files');
+        if (!selectedFilesList) return;
+        
+        if (files.length === 0) {
+            selectedFilesList.innerHTML = '';
+            return;
+        }
+        
+        selectedFilesList.innerHTML = `
+            <div class="selected-files-header">
+                <h4>Selected Files (${files.length}/${5}):</h4>
+            </div>
+            <div class="files-grid">
+                ${files.map((file, index) => `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <i class="fas fa-${this.getFileIcon(file.name)}"></i>
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-size">${this.formatFileSize(file.size)}</span>
+                        </div>
+                        <button class="btn-remove" onclick="profileInstance.removeSelectedFile(${index})" title="Remove file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+    
+    removeSelectedFile(index) {
+        const fileInput = document.getElementById('document-files');
+        if (!fileInput || !fileInput.files) return;
+        
+        const files = Array.from(fileInput.files);
+        files.splice(index, 1);
+        
+        // Update file input
+        const dt = new DataTransfer();
+        files.forEach(file => dt.items.add(file));
+        fileInput.files = dt.files;
+        
+        this.validateAndDisplayFiles(files);
+    }
+    
+    getFileIcon(filename) {
+        const extension = filename.split('.').pop().toLowerCase();
+        const iconMap = {
+            'pdf': 'file-pdf',
+            'docx': 'file-word',
+            'pptx': 'file-powerpoint',
+            'txt': 'file-alt'
+        };
+        return iconMap[extension] || 'file';
+    }
+    
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    async addDocumentFromFiles() {
+        const fileInput = document.getElementById('document-files');
+        
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            window.AcadefyApp.showToast('Please select files to upload', 'error');
+            return;
+        }
+        
+        const files = Array.from(fileInput.files);
+        const uploadBtn = document.getElementById('upload-files-btn');
+        
+        try {
+            // Disable upload button
+            if (uploadBtn) {
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            }
+            
+            window.AcadefyApp.showToast(`Uploading ${files.length} file(s)...`, 'info', 2000);
+            
+            const results = [];
+            
+            // Upload files one by one
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('title', file.name);
+                    
+                    console.log('Uploading file:', file.name);
+                    console.log('FormData contents:', Array.from(formData.entries()));
+                    
+                    const response = await fetch('/api/upload-direct', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    console.log('Response headers:', response.headers);
+                    
+                    const result = await response.json();
+                    console.log('Upload result:', result);
+                    results.push({ file: file.name, success: result.success, error: result.error });
+                    
+                    // Update progress
+                    window.AcadefyApp.showToast(`Uploaded ${i + 1}/${files.length}: ${file.name}`, 'info', 1000);
+                    
+                } catch (error) {
+                    results.push({ file: file.name, success: false, error: error.message });
+                }
+            }
+            
+            // Show final results
+            const successful = results.filter(r => r.success).length;
+            const failed = results.filter(r => !r.success).length;
+            
+            if (successful > 0) {
+                window.AcadefyApp.showToast(`Successfully uploaded ${successful} file(s)!`, 'success');
+                
+                // Clear file input and display
+                fileInput.value = '';
+                this.displaySelectedFiles([]);
+                this.loadDocuments();
+            }
+            
+            if (failed > 0) {
+                const failedFiles = results.filter(r => !r.success).map(r => r.file).join(', ');
+                window.AcadefyApp.showToast(`Failed to upload: ${failedFiles}`, 'error');
+            }
+            
+        } catch (error) {
+            console.error('Error uploading files:', error);
+            window.AcadefyApp.showToast('Failed to upload files', 'error');
+        } finally {
+            // Re-enable upload button
+            if (uploadBtn) {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Selected Files';
+            }
+        }
+    }
+
+    async addDocumentFromText() {
+        const textInput = document.getElementById('document-text');
+        const titleInput = document.getElementById('text-title');
+        
+        if (!textInput || !textInput.value.trim()) {
+            window.AcadefyApp.showToast('Please enter some text content', 'error');
+            return;
+        }
+        
+        if (!titleInput || !titleInput.value.trim()) {
+            window.AcadefyApp.showToast('Please enter a document title', 'error');
+            return;
+        }
+        
+        const content = textInput.value.trim();
+        const title = titleInput.value.trim();
+        
+        try {
+            window.AcadefyApp.showToast('Adding document...', 'info', 1000);
+            
+            const response = await window.AcadefyApp.apiRequest('/documents/add-text', {
+                method: 'POST',
+                body: JSON.stringify({ content, title })
+            });
+            
+            if (response.success) {
+                window.AcadefyApp.showToast('Document added successfully!', 'success');
+                textInput.value = '';
+                titleInput.value = '';
+                this.loadDocuments();
+            } else {
+                window.AcadefyApp.showToast(response.data.error || 'Failed to add document', 'error');
+            }
+        } catch (error) {
+            console.error('Error adding document:', error);
+            window.AcadefyApp.showToast('Failed to add document', 'error');
+        }
+    }
+    
+    async removeDocument(docId) {
+        this.showConfirmationModal(
+            'Remove Document',
+            'Are you sure you want to remove this document from the knowledge base?',
+            async () => {
+                try {
+                    const response = await window.AcadefyApp.apiRequest(`/documents/${docId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.success) {
+                        window.AcadefyApp.showToast('Document removed successfully', 'success');
+                        this.loadDocuments();
+                    } else {
+                        window.AcadefyApp.showToast('Failed to remove document', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error removing document:', error);
+                    window.AcadefyApp.showToast('Failed to remove document', 'error');
+                }
+            }
+        );
+    }
+
     // Utility method
     updateElement(id, value) {
         const element = document.getElementById(id);
@@ -421,6 +815,24 @@ window.closeConfirmationModal = function() {
 window.confirmAction = function() {
     if (window.profileInstance) {
         window.profileInstance.confirmAction();
+    }
+};
+
+window.addDocumentFromUrl = function() {
+    if (window.profileInstance) {
+        window.profileInstance.addDocumentFromUrl();
+    }
+};
+
+window.addDocumentFromFiles = function() {
+    if (window.profileInstance) {
+        window.profileInstance.addDocumentFromFiles();
+    }
+};
+
+window.addDocumentFromText = function() {
+    if (window.profileInstance) {
+        window.profileInstance.addDocumentFromText();
     }
 };
 

@@ -1,0 +1,34 @@
+{
+  "1adb748c3ec8": {
+    "id": "1adb748c3ec8",
+    "title": "Photosynthesis Explained",
+    "url": "test",
+    "content": "\n    Photosynthesis Explained\n    \n    Photosynthesis is the biological process by which plants convert light energy into chemical energy.\n    \n    This process occurs in two main stages:\n    \n    1. Light-dependent reactions: These occur in the thylakoid membranes where chlorophyll absorbs light energy. Water molecules are split, releasing oxygen as a byproduct. ATP and NADPH are produced during this stage.\n    \n    2. Light-independent reactions (Calvin Cycle): These occur in the stroma of chloroplasts. Carbon dioxide is fixed into organic molecules using the ATP and NADPH produced in the light reactions. The end product is glucose.\n    \n    The overall equation for photosynthesis is:\n    6CO2 + 6H2O + light energy → C6H12O6 + 6O2\n    \n    Photosynthesis is essential for life on Earth because it produces oxygen and forms the base of most food chains.\n    ",
+    "content_type": "text/plain",
+    "chunks": [
+      "Photosynthesis Explained\n    \n    Photosynthesis is the biological process by which plants convert light energy into chemical energy. This process occurs in two main stages:\n    \n    1. Light-dependent reactions: These occur in the thylakoid membranes where chlorophyll absorbs light energy. Water molecules are split, releasing oxygen as a byproduct. ATP and NADPH are produced during this stage. 2. Light-independent reactions (Calvin Cycle): These occur in the stroma of chloroplasts. Carbon dioxide is fixed into organic molecules using the ATP and NADPH produced in the light reactions. The end product is glucose. The overall equation for photosynthesis is:\n    6CO2 + 6H2O + light energy → C6H12O6 + 6O2\n    \n    Photosynthesis is essential for life on Earth because it produces oxygen and forms the base of most food chains."
+    ],
+    "keywords": [
+      "light",
+      "photosynthesis",
+      "energy",
+      "reactions",
+      "process",
+      "occur",
+      "molecules",
+      "oxygen",
+      "nadph",
+      "produced",
+      "explained",
+      "biological",
+      "plants",
+      "convert",
+      "chemical",
+      "occurs",
+      "main",
+      "stages",
+      "dependent",
+      "thylakoid"
+    ]
+  }
+}

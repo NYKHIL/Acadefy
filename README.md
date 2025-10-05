@@ -39,6 +39,11 @@
 - Adaptive difficulty adjustment
 - Custom learning path generation
 
+📚 **Document-Based Knowledge**
+- Upload textbooks, notes, and reference materials
+- AI automatically references your documents when answering
+- RAG (Retrieval-Augmented Generation) for source-based responses
+
 🎨 **Modern User Experience**
 - Clean, responsive design with smooth animations
 - Mobile-first approach for learning on-the-go
@@ -265,6 +270,29 @@ GET /api/progress?session_id=session_123456
 ```
 
 </details>
+
+---
+
+## 🧪 **Built-in Test Cases**
+
+Acadefy includes 5 comprehensive pre-defined learning modules that work instantly, even without internet:
+
+| 📚 Subject | 🔑 Keywords | 📖 Content |
+|------------|-------------|-------------|
+| **Integral Calculus** | `integral`, `calculus`, `integration` | Complete integration rules, examples, step-by-step solutions |
+| **Thermodynamics** | `thermodynamics`, `heat`, `entropy` | Four laws, key concepts, mathematical relationships |
+| **P-Block Elements** | `p-block`, `halogens`, `noble gases` | Periodic table groups 13-18, properties, trends |
+| **English Tenses** | `tenses`, `grammar`, `verb forms` | All 12 tenses with examples and usage rules |
+| **Graph Algorithms** | `graphs`, `dfs`, `bfs`, `algorithms` | Data structures, code examples, implementations |
+
+### 🎯 **Try These Sample Questions:**
+- "Can you help me with integral calculus?"
+- "Explain thermodynamics laws"
+- "What are p-block elements?"
+- "I need help with English tenses"
+- "How do graph algorithms work?"
+
+*See [TEST_CASES_GUIDE.md](TEST_CASES_GUIDE.md) for complete details and more sample questions.*
 
 ---
 
